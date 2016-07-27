@@ -31,6 +31,26 @@ app.post( '/countries', function( req, res ) {
   })
 })
 
+app.put( '/countries/:id', function( req, res ) {
+  MongoClient.connect( url, function( err, db ) {
+    var collection = db.collection( "countries" );
+    collection.updateOne( { _id: new ObjectId( req.params.id ) }, { $set: req.body } );
+    res.send( "updated" );
+    res.status( 200 ).end();
+    db.close();
+  })
+})
+
+app.delete( '/countries/:id', function( req, res ) {
+  MongoClient.connect( url, function( err, db ) {
+    var collection = db.collection( "countries" );
+    collection.remove( { _id: new ObjectId( req.params.id ) } );
+    res.send( "deleted" );
+    res.status( 200 ).end();
+    db.close();
+  })
+})
+
 app.use(express.static('client/build'));
 
 var server = app.listen(3000, function () {

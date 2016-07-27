@@ -27,7 +27,12 @@ BucketView.prototype = {
     console.log( "Clicked" )
   },
 
+  clickDelete: function() {
+
+  },
+
   selectCountry: function() {
+    var self = this;
     var countries = document.getElementById( 'countries' )
     var currentlySelected = countries.options[countries.selectedIndex].text
     console.log(this.list)
@@ -37,23 +42,27 @@ BucketView.prototype = {
       var ul = document.getElementById( 'list' )
       var li = document.createElement( 'li' )
       var editButton  =document.createElement( 'button' );
+      editButton.id = "editButton"
       var deleteButton  =document.createElement( 'button' );
+      deleteButton.id = "deleteButton"
       editButton.innerHTML = "Edit"
       deleteButton.innerHTML = "Delete"
       li.innerHTML = country.name
       li.appendChild( editButton )
       li.appendChild( deleteButton )
       ul.appendChild( li )
-      console.log("this", this)
+      console.log("editButton", editButton)
+      editButton.onclick = function(e){
+        self.clickEdit()
+      }
+      deleteButton.onclick = function(e){
+        self.clickDelete()
+      }
       state.country = country;
-
     }
   });
     return state.country   
-  }
-
-
-
+}
 
 }
 

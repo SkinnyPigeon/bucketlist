@@ -24,7 +24,8 @@ countries.onchange = function() {
   state.country = bucketView.selectCountry();
   console.log( state, 'state' )
   savedToDb()
-  }
+}
+
 }
 
 var savedToDb = function() {
@@ -33,10 +34,14 @@ var savedToDb = function() {
   request.setRequestHeader( "Content-Type", "application/json" )
   request.onload = function() {
     if( request.status === 200 ) {
-      console.log( state.country )
+      console.log( request )
       getCountries();
     }
   }
+  // var deleteButton = document.getElementById( 'deleteButton' )
+  // deleteButton.onclick = function() {
+  //   deleteCountries();
+  // }
   request.send( JSON.stringify( { country: state.country } ) )
 }
 
@@ -46,12 +51,23 @@ var getCountries = function() {
   request.onload = function() {
   }
   request.send( null )
+
 }
 
 var editCountries = function() {
+  var editButton = document.getElementById( 'editButton' )
   var request = new XMLHttpRequest();
   request.open( "PUT", "/countries/:id" );
-  
+
+}
+
+var deleteCountries = function( id ) {
+  var request = new XMLHttpRequest();
+  request.open( "DELETE", "/countries/:"+ id );
+  request.onload = function() {
+  }
+  request.send( null )
+
 }
 
 

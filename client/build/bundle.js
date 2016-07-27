@@ -70,7 +70,8 @@
 	  state.country = bucketView.selectCountry();
 	  console.log( state, 'state' )
 	  savedToDb()
-	  }
+	}
+	
 	}
 	
 	var savedToDb = function() {
@@ -79,10 +80,14 @@
 	  request.setRequestHeader( "Content-Type", "application/json" )
 	  request.onload = function() {
 	    if( request.status === 200 ) {
-	      console.log( state.country )
+	      console.log( request )
 	      getCountries();
 	    }
 	  }
+	  // var deleteButton = document.getElementById( 'deleteButton' )
+	  // deleteButton.onclick = function() {
+	  //   deleteCountries();
+	  // }
 	  request.send( JSON.stringify( { country: state.country } ) )
 	}
 	
@@ -92,12 +97,23 @@
 	  request.onload = function() {
 	  }
 	  request.send( null )
+	
 	}
 	
 	var editCountries = function() {
+	  var editButton = document.getElementById( 'editButton' )
 	  var request = new XMLHttpRequest();
 	  request.open( "PUT", "/countries/:id" );
-	  
+	
+	}
+	
+	var deleteCountries = function( id ) {
+	  var request = new XMLHttpRequest();
+	  request.open( "DELETE", "/countries/:"+ id );
+	  request.onload = function() {
+	  }
+	  request.send( null )
+	
 	}
 	
 	
@@ -142,7 +158,12 @@
 	    console.log( "Clicked" )
 	  },
 	
+	  clickDelete: function() {
+	
+	  },
+	
 	  selectCountry: function() {
+	    var self = this;
 	    var countries = document.getElementById( 'countries' )
 	    var currentlySelected = countries.options[countries.selectedIndex].text
 	    console.log(this.list)
@@ -152,23 +173,27 @@
 	      var ul = document.getElementById( 'list' )
 	      var li = document.createElement( 'li' )
 	      var editButton  =document.createElement( 'button' );
+	      editButton.id = "editButton"
 	      var deleteButton  =document.createElement( 'button' );
+	      deleteButton.id = "deleteButton"
 	      editButton.innerHTML = "Edit"
 	      deleteButton.innerHTML = "Delete"
 	      li.innerHTML = country.name
 	      li.appendChild( editButton )
 	      li.appendChild( deleteButton )
 	      ul.appendChild( li )
-	      console.log("this", this)
+	      console.log("editButton", editButton)
+	      editButton.onclick = function(e){
+	        self.clickEdit()
+	      }
+	      deleteButton.onclick = function(e){
+	        self.clickDelete()
+	      }
 	      state.country = country;
-	
 	    }
 	  });
 	    return state.country   
-	  }
-	
-	
-	
+	}
 	
 	}
 	
