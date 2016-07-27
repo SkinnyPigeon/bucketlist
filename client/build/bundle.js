@@ -45,7 +45,8 @@
 /***/ function(module, exports) {
 
 	state = {
-	  countries: []
+	  countries: [],
+	  country: ""
 	}
 	
 	window.onload = function(){
@@ -68,7 +69,6 @@
 	 }
 	}
 	
-	
 	var addCountries = function() {
 	 state.countries.forEach(function(country, index) {
 	   var option = document.createElement('option');
@@ -84,14 +84,37 @@
 	
 	  state.countries.forEach(function(country) {
 	   if(country.name === currentlySelected) {
+	    state.country = country;
 	    var ul = document.getElementById( 'list' )
 	    var li = document.createElement( 'li' )
 	    li.innerHTML = country.name
 	    ul.appendChild( li )
+	    savedToDb();
 	   }
 	 });
 	}
 	
+	var savedToDb = function() {
+	  var request = new XMLHttpRequest();
+	  request.open( "POST", '/countries' );
+	  request.setRequestHeader( "Content-Type", "application/json" )
+	  request.onload = function() {
+	    if( request.status === 200 ) {
+	      console.log( "Better hurry up, you're dying" )
+	      getCountries();
+	    }
+	  }
+	  request.send( JSON.stringify( { country: state.country } ) )
+	}
+	
+	var getCountries = function() {
+	  var request = new XMLHttpRequest();
+	  request.open( "GET", "/countries" );
+	  request.onload = function() {
+	    console.log( "great success 123" )
+	  }
+	  request.send( null )
+	}
 	
 	
 	
