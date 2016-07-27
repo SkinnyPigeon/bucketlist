@@ -1,51 +1,30 @@
+var BucketView = require( './viewer.js')
+
 state = {
   countries: [],
-  country: ""
+  country: []
 }
 
 window.onload = function(){
+ var bucketView;
 
-  var countries = document.getElementById( 'countries' )
+ var url = "https://restcountries.eu/rest/v1";
+ var request = new XMLHttpRequest();
+ request.open("GET", url);
+ request.send(null);
+ var countries = document.getElementById( 'countries' )
 
-  var url = "https://restcountries.eu/rest/v1";
-  var request = new XMLHttpRequest();
-  request.open("GET", url);
-  request.send(null);
-
-  request.onload = function(){
-   var response = request.responseText
-
-   state.countries = JSON.parse( response )
-   addCountries();
- }
- countries.onchange = function() {
-   selectCountry();
- }
+ request.onload = function(){
+  var response = request.responseText
+  state.countries = JSON.parse( response )
+  bucketView = new BucketView( state.countries )
+  bucketView.render()
 }
-
-var addCountries = function() {
- state.countries.forEach(function(country, index) {
-   var option = document.createElement('option');
-   option.text = country.name;
-   option.value = country.index;
-   countries.appendChild(option);   
- });
-}
-
-var selectCountry = function() {
-  var currentlySelected = countries.options[countries.selectedIndex].text
-  console.log(currentlySelected)
-
-  state.countries.forEach(function(country) {
-   if(country.name === currentlySelected) {
-    state.country = country;
-    var ul = document.getElementById( 'list' )
-    var li = document.createElement( 'li' )
-    li.innerHTML = country.name
-    ul.appendChild( li )
-    savedToDb();
-   }
- });
+countries.onchange = function() {
+  state.country = bucketView.selectCountry();
+  console.log( state, 'state' )
+  savedToDb()
+  }
 }
 
 var savedToDb = function() {
@@ -54,7 +33,7 @@ var savedToDb = function() {
   request.setRequestHeader( "Content-Type", "application/json" )
   request.onload = function() {
     if( request.status === 200 ) {
-      console.log( "Better hurry up, you're dying" )
+      console.log( state.country )
       getCountries();
     }
   }
@@ -65,9 +44,14 @@ var getCountries = function() {
   var request = new XMLHttpRequest();
   request.open( "GET", "/countries" );
   request.onload = function() {
-    console.log( "great success 123" )
   }
   request.send( null )
+}
+
+var editCountries = function() {
+  var request = new XMLHttpRequest();
+  request.open( "PUT", "/countries/:id" );
+  
 }
 
 

@@ -22,6 +22,7 @@ app.get( '/countries', function( req, res ) {
 })
 
 app.post( '/countries', function( req, res ) {
+  console.log( req.body )
   MongoClient.connect( url, function( err, db ) {
     var collection = db.collection( "countries" );
     collection.insert( req.body );

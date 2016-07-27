@@ -42,56 +42,35 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
+	var BucketView = __webpack_require__( 1)
+	
 	state = {
 	  countries: [],
-	  country: ""
+	  country: []
 	}
 	
 	window.onload = function(){
+	 var bucketView;
 	
-	  var countries = document.getElementById( 'countries' )
+	 var url = "https://restcountries.eu/rest/v1";
+	 var request = new XMLHttpRequest();
+	 request.open("GET", url);
+	 request.send(null);
+	 var countries = document.getElementById( 'countries' )
 	
-	  var url = "https://restcountries.eu/rest/v1";
-	  var request = new XMLHttpRequest();
-	  request.open("GET", url);
-	  request.send(null);
-	
-	  request.onload = function(){
-	   var response = request.responseText
-	
-	   state.countries = JSON.parse( response )
-	   addCountries();
-	 }
-	 countries.onchange = function() {
-	   selectCountry();
-	 }
+	 request.onload = function(){
+	  var response = request.responseText
+	  state.countries = JSON.parse( response )
+	  bucketView = new BucketView( state.countries )
+	  bucketView.render()
 	}
-	
-	var addCountries = function() {
-	 state.countries.forEach(function(country, index) {
-	   var option = document.createElement('option');
-	   option.text = country.name;
-	   option.value = country.index;
-	   countries.appendChild(option);   
-	 });
-	}
-	
-	var selectCountry = function() {
-	  var currentlySelected = countries.options[countries.selectedIndex].text
-	  console.log(currentlySelected)
-	
-	  state.countries.forEach(function(country) {
-	   if(country.name === currentlySelected) {
-	    state.country = country;
-	    var ul = document.getElementById( 'list' )
-	    var li = document.createElement( 'li' )
-	    li.innerHTML = country.name
-	    ul.appendChild( li )
-	    savedToDb();
-	   }
-	 });
+	countries.onchange = function() {
+	  state.country = bucketView.selectCountry();
+	  console.log( state, 'state' )
+	  savedToDb()
+	  }
 	}
 	
 	var savedToDb = function() {
@@ -100,7 +79,7 @@
 	  request.setRequestHeader( "Content-Type", "application/json" )
 	  request.onload = function() {
 	    if( request.status === 200 ) {
-	      console.log( "Better hurry up, you're dying" )
+	      console.log( state.country )
 	      getCountries();
 	    }
 	  }
@@ -111,9 +90,14 @@
 	  var request = new XMLHttpRequest();
 	  request.open( "GET", "/countries" );
 	  request.onload = function() {
-	    console.log( "great success 123" )
 	  }
 	  request.send( null )
+	}
+	
+	var editCountries = function() {
+	  var request = new XMLHttpRequest();
+	  request.open( "PUT", "/countries/:id" );
+	  
 	}
 	
 	
@@ -124,6 +108,71 @@
 	
 	
 
+
+/***/ },
+/* 1 */
+/***/ function(module, exports) {
+
+	var BucketView = function( list ) {
+	  this.list = list;
+	}
+	
+	state = {
+	  country: ""
+	}
+	
+	
+	
+	BucketView.prototype = {
+	  render: function() {
+	    this.addCountries();
+	  },
+	
+	  addCountries: function() {
+	    this.list.forEach(function(country, index) {
+	      var countries = document.getElementById( 'countries' )
+	      var option = document.createElement('option');
+	      option.text = country.name;
+	      option.value = country.index;
+	      countries.appendChild(option);
+	    });    
+	  },
+	
+	  clickEdit: function() {
+	    console.log( "Clicked" )
+	  },
+	
+	  selectCountry: function() {
+	    var countries = document.getElementById( 'countries' )
+	    var currentlySelected = countries.options[countries.selectedIndex].text
+	    console.log(this.list)
+	
+	    this.list.forEach(function(country) {
+	     if(country.name === currentlySelected) {
+	      var ul = document.getElementById( 'list' )
+	      var li = document.createElement( 'li' )
+	      var editButton  =document.createElement( 'button' );
+	      var deleteButton  =document.createElement( 'button' );
+	      editButton.innerHTML = "Edit"
+	      deleteButton.innerHTML = "Delete"
+	      li.innerHTML = country.name
+	      li.appendChild( editButton )
+	      li.appendChild( deleteButton )
+	      ul.appendChild( li )
+	      console.log("this", this)
+	      state.country = country;
+	
+	    }
+	  });
+	    return state.country   
+	  }
+	
+	
+	
+	
+	}
+	
+	module.exports = BucketView;
 
 /***/ }
 /******/ ]);
